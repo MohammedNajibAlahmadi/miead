@@ -42,7 +42,7 @@ class AdhkarScreen extends StatelessWidget {
                           child: CircularProgressIndicator(
                             value: state.count / (state.currentItem?.target ?? 100),
                             strokeWidth: 14,
-                            backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+                            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                             valueColor: AlwaysStoppedAnimation<Color>(
                               state.isCompleted ? Colors.green : Theme.of(context).primaryColor,
                             ),
@@ -91,7 +91,7 @@ class AdhkarScreen extends StatelessWidget {
                       icon: const Icon(Icons.refresh),
                       label: const Text('تصفير العداد'),
                       style: ElevatedButton.styleFrom(
-                         backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+                         backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                          foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
                          elevation: 0,
                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),

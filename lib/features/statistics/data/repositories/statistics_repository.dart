@@ -1,5 +1,6 @@
+import 'package:sqflite/sqflite.dart';
 import '../../../../core/database/database_helper.dart';
-import '../entities/app_stats.dart';
+import '../../domain/entities/app_stats.dart';
 
 class StatisticsRepository {
   final DatabaseHelper _dbHelper;

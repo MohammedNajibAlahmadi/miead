@@ -1,5 +1,5 @@
 import '../../../../core/database/database_helper.dart';
-import '../entities/daily_prayer_record.dart';
+import '../../domain/entities/daily_prayer_record.dart';
 
 class PrayerTrackerRepository {
   final DatabaseHelper _dbHelper;

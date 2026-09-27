@@ -29,12 +29,12 @@ class AlarmsScreen extends StatelessWidget {
                 final isActive = alarm.isActive;
                 return Card(
                   elevation: 0,
-                  color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(isActive ? 1.0 : 0.5),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: isActive ? 1.0 : 0.5),
                   margin: const EdgeInsets.only(bottom: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                     side: BorderSide(
-                      color: isActive ? Theme.of(context).primaryColor.withOpacity(0.2) : Colors.transparent,
+                      color: isActive ? Theme.of(context).primaryColor.withValues(alpha: 0.2) : Colors.transparent,
                     )
                   ),
                   child: Padding(
@@ -81,7 +81,7 @@ class AlarmsScreen extends StatelessWidget {
                             onChanged: (_) {
                               context.read<AlarmsCubit>().toggleAlarm(alarm.id);
                             },
-                            activeColor: Theme.of(context).primaryColor,
+                            activeThumbColor: Theme.of(context).primaryColor,
                           ),
                         ),
                       ],

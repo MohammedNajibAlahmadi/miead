@@ -38,7 +38,7 @@ class FocusScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
-                        BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))
+                        BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))
                       ],
                     ),
                     child: Stack(
@@ -155,7 +155,7 @@ class FocusScreen extends StatelessWidget {
         if (selected) context.read<FocusCubit>().selectType(type);
       },
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      selectedColor: Theme.of(context).primaryColor.withOpacity(0.15),
+      selectedColor: Theme.of(context).primaryColor.withValues(alpha: 0.15),
       checkmarkColor: Theme.of(context).primaryColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     );

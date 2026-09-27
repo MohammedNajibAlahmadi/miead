@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../data/repositories/prayer_tracker_repository.dart';
-import '../domain/entities/daily_prayer_record.dart';
+import '../../data/repositories/prayer_tracker_repository.dart';
+import '../../domain/entities/daily_prayer_record.dart';
 
 class PrayerTrackerCubit extends Cubit<DailyPrayerRecord> {
   final PrayerTrackerRepository _repository;

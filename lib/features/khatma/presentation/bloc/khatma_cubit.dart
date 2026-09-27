@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../data/repositories/khatma_repository.dart';
-import '../domain/entities/khatma_progress.dart';
+import '../../data/repositories/khatma_repository.dart';
+import '../../domain/entities/khatma_progress.dart';
 
 class KhatmaCubit extends Cubit<KhatmaProgress> {
   final KhatmaRepository _repository;

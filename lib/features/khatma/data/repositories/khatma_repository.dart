@@ -1,5 +1,5 @@
 import '../../../../core/database/database_helper.dart';
-import '../entities/khatma_progress.dart';
+import '../../domain/entities/khatma_progress.dart';
 
 class KhatmaRepository {
   final DatabaseHelper _dbHelper;

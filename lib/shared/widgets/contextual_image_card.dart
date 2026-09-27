@@ -37,7 +37,7 @@ class ContextualImageCard extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: Theme.of(context).primaryColor.withOpacity(0.3),
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
                 blurRadius: 15,
                 offset: const Offset(0, 5),
               ),
@@ -51,7 +51,7 @@ class ContextualImageCard extends StatelessWidget {
                 child: Icon(
                   Icons.mosque,
                   size: 150,
-                  color: Colors.white.withOpacity(0.1),
+                  color: Colors.white.withValues(alpha: 0.1),
                 ),
               ),
               Padding(
@@ -71,7 +71,7 @@ class ContextualImageCard extends StatelessWidget {
                     Text(
                       subtitle,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.white.withValues(alpha: 0.8),
                       ),
                     ),
                   ],

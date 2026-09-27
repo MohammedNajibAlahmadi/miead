@@ -76,9 +76,9 @@ class PrayerScreen extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: isNext ? Theme.of(context).primaryColor.withOpacity(0.1) : null,
+        color: isNext ? Theme.of(context).primaryColor.withValues(alpha: 0.1) : null,
         borderRadius: BorderRadius.circular(16),
-        border: isNext ? Border.all(color: Theme.of(context).primaryColor, width: 1.5) : Border.all(color: Colors.grey.withOpacity(0.2)),
+        border: isNext ? Border.all(color: Theme.of(context).primaryColor, width: 1.5) : Border.all(color: Colors.grey.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
@@ -113,7 +113,7 @@ class PrayerScreen extends StatelessWidget {
           const SizedBox(width: 16),
           Icon(
             isAlarmActive ? Icons.notifications_active : Icons.notifications_off_outlined,
-            color: isAlarmActive ? Theme.of(context).primaryColor : Colors.grey.withOpacity(0.5),
+            color: isAlarmActive ? Theme.of(context).primaryColor : Colors.grey.withValues(alpha: 0.5),
             size: 22,
           ),
         ],

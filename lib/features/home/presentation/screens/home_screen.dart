@@ -80,8 +80,7 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 PrayerCard(
                   prayerName: state.nextPrayerName ?? 'غير معروف',
-                  timeRemaining: state.nextPrayerTime ?? '--:--',
-                  semanticLabel: 'الصلاة القادمة',
+                  prayerTime: state.nextPrayerTime ?? '--:--',
                 ),
                 const SizedBox(height: 24),
                 BlocProvider(
@@ -92,7 +91,7 @@ class HomeScreen extends StatelessWidget {
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
-                          side: BorderSide(color: Colors.grey.withOpacity(0.2)),
+                          side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
@@ -155,7 +154,7 @@ class HomeScreen extends StatelessWidget {
                 Card(
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   elevation: 0,
-                  color: Theme.of(context).colorScheme.surfaceVariant,
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   child: ListTile(
                     title: Text(state.currentActivity ?? 'لا يوجد نشاط الآن'),
                     subtitle: Text(state.currentActivity == null ? 'استرخِ أو ابدأ مهمة جديدة' : 'جاري التنفيذ...'),
@@ -171,7 +170,7 @@ class HomeScreen extends StatelessWidget {
                   ...state.tasks.map((task) => Card(
                     margin: const EdgeInsets.only(bottom: 8),
                     elevation: 0,
-                    color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.4),
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
                     child: CheckboxListTile(
                        title: Text(
                          task.title,
