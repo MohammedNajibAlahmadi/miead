@@ -4,8 +4,8 @@
 تطبيق (Offline-First) إنتاجية إسلامي متكامل يجمع بين إدارة المهام اليومية، متابعة أداء الصلوات، والختمة القرآنية الذكية لمعالجة ضعف الانضباط، وتشتت الانتباه نتيجة تعدد التطبيقات المعقدة.
 
 ## أعضاء الفريق (Team Members & Roles)
-- **محمد نجيب (Mohammed Najib):** قائد برمجة الموبايل (Lead Mobile Engineer) - بناء معمارية الفلتر (Flutter Feature-First Architecture)، تصميم واجهات النظام المتقدمة، وبرمجة قاعدة البيانات المحلية (Offline-First SQLite).
-- **ضياء (Diaa):** قائد تطوير الخوادم (Lead Backend Engineer & Requirements Owner) - هيكلة خادم الـ C# .NET Web API، بناء محرك المزامنة (Cloud Sync Engine) وإدارة الـ API Backend (Entity Framework).
+- **محمد نجيب (Lead Software Architect & Owner):** المهندس المعماري الرئيسي وقائد المشروع، مسؤول هندسة البرمجيات العميقة (Clean Architecture, Offline-First)، برمجة التطبيق بالكامل (Flutter BLoC)، تصميم قواعد بيانات SQLite والمحركات المعقدة، وأتمتة الـ CI/CD.
+- **ضياء (Backend Support & Analyst):** المساعدة في تطوير الواجهة الخلفية (C# Web API الأساسية)، والمشاركة في تدوين متطلبات الـ SRS الأساسية والاختبارات الأوّلية.
 
 ## التقنيات المتوقعة
 - Flutter SDK (Dart)
