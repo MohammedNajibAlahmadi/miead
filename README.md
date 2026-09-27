@@ -5,7 +5,7 @@
 
 ## أعضاء الفريق (Team Members & Roles)
 - **محمد نجيب (Lead Software Architect & Owner):** المهندس المعماري الرئيسي وقائد المشروع، مسؤول هندسة البرمجيات العميقة (Clean Architecture, Offline-First)، برمجة التطبيق بالكامل (Flutter BLoC)، تصميم قواعد بيانات SQLite والمحركات المعقدة، وأتمتة الـ CI/CD.
-- **حبيب (Backend Support & Analyst):** المساعدة في تطوير الواجهة الخلفية (C# Web API الأساسية)، والمشاركة في تدوين متطلبات الـ SRS الأساسية والاختبارات الأوّلية.
+- **[حبيب](https://github.com/hsba97199-svg) (Backend Support & Analyst):** المساعدة في تطوير الواجهة الخلفية (C# Web API الأساسية)، والمشاركة في تدوين متطلبات الـ SRS الأساسية والاختبارات الأوّلية.
 
 ## التقنيات المتوقعة
 - Flutter SDK (Dart)
