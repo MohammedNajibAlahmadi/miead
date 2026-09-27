@@ -18,7 +18,8 @@ class SyncManager {
         print('Offline-First Sync Completed: Pushed ${tasks.length} tasks.');
       }
     } catch (e) {
-      print('SyncManager Error: $e');
+      // Backend handling mapping (Exception parsing triggered if C# web server is offline)
+      print('SyncManager Error [Backend Unreachable]: $e');
     }
   }
 }
