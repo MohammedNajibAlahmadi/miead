@@ -13,3 +13,5 @@ void main() async {
 // TODO: Implement Issue #1 as team Mohammed and Ali
 
 // [Mohammed]: Added boundary check to prevent pages > 604 (Edge Case)
+
+// [Ali]: Adjusted Friday mode trigger logic
