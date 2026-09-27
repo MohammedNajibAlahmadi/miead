@@ -25,12 +25,12 @@ class ApiService {
   Future<void> pushTasks(List<Map<String, dynamic>> tasks) async {
     for (var task in tasks) {
       try {
-        final payload = {
-          // Send to C# mapping
+        // Mapped payload structure matching the Entity Framework C# TaskItem model
+        final Map<String, dynamic> payload = {
           'id': task['id'],
           'title': task['title'],
           'isCompleted': (task['is_completed'] == 1),
-          // Fallback date to now if not available locally
+          // Ensure standard ISO8601 formatting for absolute server sync timing
           'createdAt': DateTime.now().toUtc().toIso8601String() 
         };
         
