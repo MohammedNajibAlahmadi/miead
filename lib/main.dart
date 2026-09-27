@@ -9,3 +9,7 @@ void main() async {
   
   runApp(const MieadApp());
 }
+
+// TODO: Implement Issue #1 as team Mohammed and Ali
+
+// [Mohammed]: Added boundary check to prevent pages > 604 (Edge Case)
