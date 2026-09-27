@@ -7,6 +7,7 @@ import '../bloc/home_cubit.dart';
 import '../bloc/home_state.dart';
 import '../../../../features/khatma/domain/entities/khatma_progress.dart';
 import '../../../../features/khatma/presentation/bloc/khatma_cubit.dart';
+import '../../../../core/sync/sync_manager.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -19,6 +20,23 @@ class HomeScreen extends StatelessWidget {
         appBar: AppBar(
           title: const Text('مِيعاد', style: TextStyle(fontWeight: FontWeight.bold)),
           centerTitle: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.cloud_sync),
+              tooltip: 'المزامنة السحابية',
+              onPressed: () async {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('جارٍ المزامنة مع السحابة...')),
+                );
+                await getIt<SyncManager>().syncTasksToCloud();
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('تمت المزامنة بنجاح!')),
+                  );
+                }
+              },
+            ),
+          ],
         ),
         body: BlocBuilder<HomeCubit, HomeState>(
           builder: (context, state) {

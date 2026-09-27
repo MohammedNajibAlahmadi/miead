@@ -1,6 +1,8 @@
 import 'package:get_it/get_it.dart';
 import '../../core/datetime/clock.dart';
 import '../../core/database/database_helper.dart';
+import '../../core/network/api_service.dart';
+import '../../core/sync/sync_manager.dart';
 import '../../core/notifications/local_notifications_service.dart';
 import '../../features/timer/domain/services/timer_engine.dart';
 import '../../features/alarms/domain/services/alarm_engine.dart';
@@ -64,4 +66,8 @@ Future<void> setupDependencies() async {
   getIt.registerFactory<HomeCubit>(() => HomeCubit(getIt<AppClock>(), getIt<PrayerEngine>(), getIt<TaskRepository>()));
   getIt.registerFactory<FocusCubit>(() => FocusCubit(getIt<TimerEngine>()));
   getIt.registerFactory<AlarmsCubit>(() => AlarmsCubit(getIt<AlarmRepository>()));
+  
+  // Sync Engine
+  getIt.registerLazySingleton<ApiService>(() => ApiService());
+  getIt.registerLazySingleton<SyncManager>(() => SyncManager(getIt<DatabaseHelper>(), getIt<ApiService>()));
 }
