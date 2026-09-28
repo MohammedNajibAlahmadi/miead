@@ -2,53 +2,72 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/statistics_cubit.dart';
 import '../../domain/entities/app_stats.dart';
+import '../widgets/achievements_view.dart';
 
 class StatisticsScreen extends StatelessWidget {
   const StatisticsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('إحصائيات الإنجاز')),
-      body: BlocBuilder<StatisticsCubit, AppStats>(
-        builder: (context, stats) {
-          return ListView(
-            padding: const EdgeInsets.all(16.0),
-            children: [
-              _buildStatCard(
-                context,
-                title: 'المهام المنجزة',
-                value: stats.completedTasksTotal.toString(),
-                icon: Icons.task_alt,
-                color: const Color(0xFF006A4E),
-              ),
-              const SizedBox(height: 16),
-              _buildStatCard(
-                context,
-                title: 'دقائق التركيز (اليوم)',
-                value: '\${stats.todayFocusMinutes} دقيقة',
-                icon: Icons.timer,
-                color: const Color(0xFFD4AF37),
-              ),
-              const SizedBox(height: 16),
-              _buildStatCard(
-                context,
-                title: 'إجمالي دقائق التركيز',
-                value: '\${stats.totalFocusMinutes} دقيقة',
-                icon: Icons.access_time_filled,
-                color: Colors.blueGrey,
-              ),
-              const SizedBox(height: 16),
-              _buildStatCard(
-                context,
-                title: 'معدل الأذكار المحفوظة',
-                value: stats.adhkarCompleted.toString(),
-                icon: Icons.fingerprint,
-                color: Colors.teal,
-              ),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('الإحصائيات والأوسمة'),
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: 'الأرقام', icon: Icon(Icons.bar_chart)),
+              Tab(text: 'الأوسمة والجوائز', icon: Icon(Icons.military_tech)),
             ],
-          );
-        },
+          ),
+        ),
+        body: BlocBuilder<StatisticsCubit, AppStats>(
+          builder: (context, stats) {
+            return TabBarView(
+              children: [
+                // Tab 1: Numbers
+                ListView(
+                  padding: const EdgeInsets.all(16.0),
+                  children: [
+                    _buildStatCard(
+                      context,
+                      title: 'المهام المنجزة',
+                      value: stats.completedTasksTotal.toString(),
+                      icon: Icons.task_alt,
+                      color: const Color(0xFF006A4E),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildStatCard(
+                      context,
+                      title: 'دقائق التركيز (اليوم)',
+                      value: '${stats.todayFocusMinutes} دقيقة',
+                      icon: Icons.timer,
+                      color: const Color(0xFFD4AF37),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildStatCard(
+                      context,
+                      title: 'إجمالي دقائق التركيز',
+                      value: '${stats.totalFocusMinutes} دقيقة',
+                      icon: Icons.access_time_filled,
+                      color: Colors.blueGrey,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildStatCard(
+                      context,
+                      title: 'معدل الأذكار المحفوظة',
+                      value: stats.adhkarCompleted.toString(),
+                      icon: Icons.fingerprint,
+                      color: Colors.teal,
+                    ),
+                  ],
+                ),
+                // Tab 2: Gamification (AchievementsView)
+                AchievementsView(stats: stats),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

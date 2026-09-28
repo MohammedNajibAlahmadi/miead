@@ -7,7 +7,6 @@ import '../bloc/home_cubit.dart';
 import '../bloc/home_state.dart';
 import '../../../../features/khatma/domain/entities/khatma_progress.dart';
 import '../../../../features/khatma/presentation/bloc/khatma_cubit.dart';
-import '../../../../core/sync/sync_manager.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -20,23 +19,6 @@ class HomeScreen extends StatelessWidget {
         appBar: AppBar(
           title: const Text('مِيعاد', style: TextStyle(fontWeight: FontWeight.bold)),
           centerTitle: true,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.cloud_sync),
-              tooltip: 'المزامنة السحابية',
-              onPressed: () async {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('جارٍ المزامنة مع السحابة...')),
-                );
-                await getIt<SyncManager>().syncTasksToCloud();
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('تمت المزامنة بنجاح!')),
-                  );
-                }
-              },
-            ),
-          ],
         ),
         body: BlocBuilder<HomeCubit, HomeState>(
           builder: (context, state) {
@@ -91,7 +73,7 @@ class HomeScreen extends StatelessWidget {
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
-                          side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+                          side: BorderSide(color: Colors.grey.withOpacity(0.2)),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
@@ -154,7 +136,7 @@ class HomeScreen extends StatelessWidget {
                 Card(
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   elevation: 0,
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  color: Theme.of(context).colorScheme.surfaceVariant,
                   child: ListTile(
                     title: Text(state.currentActivity ?? 'لا يوجد نشاط الآن'),
                     subtitle: Text(state.currentActivity == null ? 'استرخِ أو ابدأ مهمة جديدة' : 'جاري التنفيذ...'),
@@ -170,7 +152,7 @@ class HomeScreen extends StatelessWidget {
                   ...state.tasks.map((task) => Card(
                     margin: const EdgeInsets.only(bottom: 8),
                     elevation: 0,
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+                    color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.4),
                     child: CheckboxListTile(
                        title: Text(
                          task.title,
@@ -233,6 +215,10 @@ class HomeScreen extends StatelessWidget {
                 GoRouter.of(context).push('/adhkar');
               }),
               ListTile(leading: const Icon(Icons.alarm_add), title: const Text('تذكير أو منبه سريع'), onTap: () => Navigator.pop(context)),
+              ListTile(leading: const Icon(Icons.edit_note, color: Color(0xFFD4AF37)), title: const Text('تدوين تأملات وملاحظات', style: TextStyle(color: Color(0xFFD4AF37), fontWeight: FontWeight.bold)), onTap: () {
+                Navigator.pop(context);
+                GoRouter.of(context).push('/notes');
+              }),
               const SizedBox(height: 16),
             ],
           ),

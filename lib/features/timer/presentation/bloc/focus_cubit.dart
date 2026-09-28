@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../app/dependency_injection/di.dart';
+import '../../../../core/notifications/notification_engine.dart';
 import '../../domain/entities/timer_session.dart';
 import '../../domain/services/timer_engine.dart';
 import 'focus_state.dart';
@@ -19,6 +21,10 @@ class FocusCubit extends Cubit<FocusState> {
 
   void selectType(SessionType type) {
     emit(state.copyWith(session: state.session.copyWith(type: type)));
+  }
+
+  void updateDuration(int minutes) {
+    emit(state.copyWith(session: state.session.copyWith(duration: Duration(minutes: minutes))));
   }
 
   void start() {
@@ -70,7 +76,12 @@ class FocusCubit extends Cubit<FocusState> {
   void _complete() {
     final nextSession = _engine.transition(state.session, TimerState.completed);
     emit(state.copyWith(session: nextSession));
-    // Trigger local notification here!
+    
+    getIt<NotificationEngine>().showInstantNotification(
+      id: 888,
+      title: 'بطل التركيز!',
+      body: 'لقد أكملت أهدافك ببراعة لمدة ${state.session.duration.inMinutes} دقيقة. خذ استراحة.',
+    );
   }
 
   @override

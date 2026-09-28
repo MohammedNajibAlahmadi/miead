@@ -1,4 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../app/dependency_injection/di.dart';
+import '../../../../core/notifications/notification_engine.dart';
 import '../../domain/entities/alarm.dart';
 import '../../data/repositories/alarm_repository.dart';
 import '../../../../core/datetime/time_engine.dart';
@@ -25,6 +27,14 @@ class AlarmsCubit extends Cubit<AlarmsState> {
     emit(state.copyWith(alarms: list));
   }
 
+  Future<void> addAlarm(AlarmDefinition alarm) async {
+    await _repository.insertAlarm(alarm);
+    if (alarm.isActive) {
+      await getIt<NotificationEngine>().scheduleAlarmNotification(alarm);
+    }
+    await _loadAlarms();
+  }
+
   Future<void> toggleAlarm(String id) async {
     final alarmIndex = state.alarms.indexWhere((a) => a.id == id);
     if (alarmIndex == -1) return;
@@ -44,6 +54,13 @@ class AlarmsCubit extends Cubit<AlarmsState> {
     final updatedList = List<AlarmDefinition>.from(state.alarms);
     updatedList[alarmIndex] = updatedAlarm;
     emit(state.copyWith(alarms: updatedList));
+    
+    // OS interaction
+    if (updatedAlarm.isActive) {
+      await getIt<NotificationEngine>().scheduleAlarmNotification(updatedAlarm);
+    } else {
+      await getIt<NotificationEngine>().cancelAlarm(updatedAlarm.id);
+    }
     
     // Save to DB
     await _repository.updateAlarm(updatedAlarm);

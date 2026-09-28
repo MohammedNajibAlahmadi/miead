@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/datetime/clock.dart';
 import '../../../prayer/domain/services/prayer_engine.dart';
@@ -10,9 +11,57 @@ class HomeCubit extends Cubit<HomeState> {
   final AppClock _clock;
   final PrayerEngine _prayerEngine;
   final TaskRepository _taskRepository;
+  Timer? _ticker;
 
   HomeCubit(this._clock, this._prayerEngine, this._taskRepository) : super(const HomeState()) {
     loadHomeData();
+    _startTicker();
+  }
+
+  void _startTicker() {
+    _ticker = Timer.periodic(const Duration(minutes: 1), (_) {
+      _refreshTimeSync();
+    });
+  }
+
+  void _refreshTimeSync() {
+    if (state.status != HomeStatus.success) return;
+    
+    final now = _clock.now();
+    final dateString = '${now.year}/${now.month}/${now.day}';
+    final location = const PrayerLocation(latitude: 21.4225, longitude: 39.8262, title: 'مكة المكرمة');
+    
+    final prayerTimes = _prayerEngine.calculatePrayerTimes(location: location, date: now);
+    final nextPrayer = _prayerEngine.getNextPrayer(prayerTimes);
+    
+    String? nextPrayerName;
+    String? nextPrayerTimeStr;
+    
+    if (nextPrayer != null && nextPrayer != Prayer.none) {
+      final time = _prayerEngine.timeForPrayer(prayerTimes, nextPrayer);
+      if (time != null) {
+        nextPrayerName = _getArabicPrayerName(nextPrayer);
+        final difference = time.difference(now);
+        // Live countdown mechanism (Time remaining)
+        if (difference.inHours > 0) {
+          nextPrayerTimeStr = "متبقي ${difference.inHours}س و ${difference.inMinutes.remainder(60)}د";
+        } else {
+          nextPrayerTimeStr = "متبقي ${difference.inMinutes} دقيقة";
+        }
+      }
+    } else {
+      nextPrayerName = 'الفجر';
+      nextPrayerTimeStr = 'غداً';
+    }
+
+    final isFridayTemp = now.weekday == DateTime.friday;
+
+    emit(state.copyWith(
+      dateString: dateString,
+      nextPrayerName: nextPrayerName,
+      nextPrayerTime: nextPrayerTimeStr,
+      isFriday: isFridayTemp,
+    ));
   }
 
   void loadHomeData() async {
@@ -20,44 +69,18 @@ class HomeCubit extends Cubit<HomeState> {
     
     try {
       final now = _clock.now();
-      
-      final dateString = '${now.year}/${now.month}/${now.day}';
-      
-      // Default location for demo (Mecca)
-      final location = const PrayerLocation(latitude: 21.4225, longitude: 39.8262, title: 'مكة المكرمة');
-      final prayerTimes = _prayerEngine.calculatePrayerTimes(
-        location: location,
-        date: now,
-      );
-      
-      final nextPrayer = _prayerEngine.getNextPrayer(prayerTimes);
-      String? nextPrayerName;
-      String? nextPrayerTimeStr;
-      
-      if (nextPrayer != null && nextPrayer != Prayer.none) {
-        final time = _prayerEngine.timeForPrayer(prayerTimes, nextPrayer);
-        if (time != null) {
-          nextPrayerName = _getArabicPrayerName(nextPrayer);
-          nextPrayerTimeStr = "${time.hour > 12 ? time.hour - 12 : time.hour == 0 ? 12 : time.hour}:${time.minute.toString().padLeft(2, '0')}";
-        }
-      } else {
-        nextPrayerName = 'الفجر';
-        nextPrayerTimeStr = 'غداً';
-      }
-
       final dateIso = now.toIso8601String().substring(0, 10);
       final tasks = await _taskRepository.getTasks(dateIso);
-      final isFridayTemp = now.weekday == DateTime.friday;
-
+      
+      // Seed first success state
       emit(state.copyWith(
         status: HomeStatus.success,
-        dateString: dateString,
-        currentActivity: null,
-        nextPrayerName: nextPrayerName,
-        nextPrayerTime: nextPrayerTimeStr,
         tasks: tasks,
-        isFriday: isFridayTemp,
+        currentActivity: null,
       ));
+      
+      // Calculate times natively
+      _refreshTimeSync();
     } catch (e) {
       emit(state.copyWith(status: HomeStatus.failure));
     }
@@ -95,4 +118,11 @@ class HomeCubit extends Cubit<HomeState> {
     final tasks = await _taskRepository.getTasks(dateIso);
     emit(state.copyWith(tasks: tasks));
   }
+
+  @override
+  Future<void> close() {
+    _ticker?.cancel();
+    return super.close();
+  }
 }
+

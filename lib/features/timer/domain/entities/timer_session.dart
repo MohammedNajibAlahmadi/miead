@@ -22,6 +22,7 @@ class TimerSession extends Equatable {
 
   TimerSession copyWith({
     SessionType? type,
+    Duration? duration,
     Duration? elapsed,
     TimerState? state,
     DateTime? startTime,
@@ -29,7 +30,7 @@ class TimerSession extends Equatable {
     return TimerSession(
       id: id,
       type: type ?? this.type,
-      duration: duration,
+      duration: duration ?? this.duration,
       elapsed: elapsed ?? this.elapsed,
       state: state ?? this.state,
       startTime: startTime ?? this.startTime,

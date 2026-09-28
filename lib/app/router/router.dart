@@ -4,6 +4,7 @@ import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/home/presentation/screens/main_shell_screen.dart';
 
 import '../../features/prayer/presentation/screens/prayer_screen.dart';
+import '../../features/prayer/presentation/screens/qibla_compass_screen.dart';
 import '../../features/timer/presentation/screens/focus_screen.dart';
 import '../../features/alarms/presentation/screens/alarms_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
@@ -11,6 +12,7 @@ import '../../features/adhkar/presentation/screens/adhkar_screen.dart';
 import '../../features/heritage/presentation/screens/friday_screen.dart';
 import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../../features/statistics/presentation/screens/statistics_screen.dart';
+import '../../features/notes/presentation/screens/notes_screen.dart';
 import '../../features/settings/presentation/bloc/settings_cubit.dart';
 import '../../app/dependency_injection/di.dart';
 
@@ -44,6 +46,10 @@ final goRouter = GoRouter(
     GoRoute(
       path: '/statistics',
       builder: (context, state) => const StatisticsScreen(),
+    ),
+    GoRoute(
+      path: '/notes',
+      builder: (context, state) => const NotesScreen(),
     ),
     GoRoute(
       path: '/adhkar',

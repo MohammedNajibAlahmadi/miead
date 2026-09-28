@@ -85,6 +85,16 @@ class FocusScreen extends StatelessWidget {
                         _buildChip(SessionType.custom, 'مخصص', session.type, context),
                       ],
                     ),
+                    const SizedBox(height: 24),
+                    Text('المدة: ${session.duration.inMinutes} دقيقة', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    Slider(
+                      value: session.duration.inMinutes.toDouble(),
+                      min: 5,
+                      max: 120,
+                      divisions: 23,
+                      activeColor: Theme.of(context).primaryColor,
+                      onChanged: (val) => context.read<FocusCubit>().updateDuration(val.toInt()),
+                    ),
                     const SizedBox(height: 48),
                     ElevatedButton.icon(
                       onPressed: () => context.read<FocusCubit>().start(),

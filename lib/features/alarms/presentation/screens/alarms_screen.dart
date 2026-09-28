@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/datetime/time_engine.dart';
+import '../../domain/entities/alarm.dart';
 import '../../../../app/dependency_injection/di.dart';
 import '../bloc/alarms_cubit.dart';
 import '../bloc/alarms_state.dart';
@@ -93,7 +95,24 @@ class AlarmsScreen extends StatelessWidget {
           },
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () async {
+            final TimeOfDay? picked = await showTimePicker(
+              context: context,
+              initialTime: TimeOfDay.now(),
+            );
+            if (picked != null) {
+              final newAlarm = AlarmDefinition(
+                id: DateTime.now().millisecondsSinceEpoch.toString(),
+                title: 'تنبيه مخصص',
+                time: LocalTime(picked.hour, picked.minute, 0),
+                isActive: true,
+                activeDays: const [1, 2, 3, 4, 5, 6, 7],
+              );
+              if (context.mounted) {
+                context.read<AlarmsCubit>().addAlarm(newAlarm);
+              }
+            }
+          },
           child: const Icon(Icons.add_alarm_rounded),
         ),
       ),

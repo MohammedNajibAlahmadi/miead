@@ -4,6 +4,7 @@ import '../../../../shared/widgets/contextual_image_card.dart';
 import '../bloc/prayer_tracker_cubit.dart';
 import '../../domain/entities/daily_prayer_record.dart';
 import '../../../../app/dependency_injection/di.dart';
+import 'package:go_router/go_router.dart';
 
 class PrayerScreen extends StatelessWidget {
   const PrayerScreen({super.key});
@@ -42,6 +43,19 @@ class PrayerScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: () => GoRouter.of(context).push('/qibla'),
+              icon: const Icon(Icons.explore),
+              label: const Text('بوصلة تحديد اتجاه القبلة', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFD4AF37),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                elevation: 0,
+              ),
+            ),
+            const SizedBox(height: 16),
             const ContextualImageCard(
               assetPath: 'assets/images/prayer/prayer_makkah_01.webp',
               title: 'صلاة العصر',

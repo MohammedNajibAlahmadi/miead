@@ -3,7 +3,7 @@ import 'package:path/path.dart';
 
 class DatabaseHelper {
   static const _databaseName = "miead.db";
-  static const _databaseVersion = 6;
+  static const _databaseVersion = 7;
 
   Database? _database;
 
@@ -49,6 +49,7 @@ class DatabaseHelper {
     await _createTimerSessionsTable(db);
     await _createPrayerTrackerTable(db);
     await _createKhatmaTable(db);
+    await _createNotesTable(db);
   }
 
   Future _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -67,6 +68,21 @@ class DatabaseHelper {
     if (oldVersion < 6) {
       await _createKhatmaTable(db);
     }
+    if (oldVersion < 7) {
+      await _createNotesTable(db);
+    }
+  }
+
+  Future _createNotesTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE notes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        content TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        color_code INTEGER NOT NULL
+      )
+    ''');
   }
 
   Future _createKhatmaTable(Database db) async {
