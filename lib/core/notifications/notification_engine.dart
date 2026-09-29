@@ -13,14 +13,14 @@ class NotificationEngine {
     const AndroidInitializationSettings initSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
     const InitializationSettings initSettings = InitializationSettings(android: initSettingsAndroid);
     
-    await (_plugin as dynamic).initialize(
-      initializationSettings: initSettings,
+    await _plugin.initialize(
+      initSettings,
       onDidReceiveNotificationResponse: (details) {
         // Handle notification tap
       },
     );
 
-    await (_plugin as dynamic)
+    await _plugin
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
 
@@ -37,11 +37,11 @@ class NotificationEngine {
       priority: Priority.high,
     );
     const details = NotificationDetails(android: androidDetails);
-    await (_plugin as dynamic).show(
+    await _plugin.show(
       id,
       title,
       body,
-      notificationDetails: details,
+      details,
     );
   }
 
@@ -68,19 +68,20 @@ class NotificationEngine {
 
     final details = const NotificationDetails(android: androidDetails);
 
-    await (_plugin as dynamic).zonedSchedule(
+    await _plugin.zonedSchedule(
       alarm.id.hashCode,
       alarm.title,
       'حان وقت: ${alarm.title}',
       tz.TZDateTime.from(scheduledDate, tz.local),
-      notificationDetails: details,
+      details,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
     );
   }
 
   Future<void> cancelAlarm(String id) async {
     if (kIsWeb) return;
-    await (_plugin as dynamic).cancel(id.hashCode);
+    await _plugin.cancel(id.hashCode);
   }
 
   Future<void> cancelAll() async {
