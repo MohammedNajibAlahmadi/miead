@@ -25,13 +25,30 @@ class StatisticsRepository {
 
     // Get Adhkar Completed (Dummy metric, normally we'd track adhkar sessions)
     final adhkarResult = await db.rawQuery('SELECT COUNT(*) as count FROM adhkar');
-    final adhkarCompleted = (Sqflite.firstIntValue(adhkarResult) ?? 0) * 100; // Mock multiplier for visual appeal 
+    final adhkarCompleted = (Sqflite.firstIntValue(adhkarResult) ?? 0) * 100;
+
+    // Get distribution map
+    final distResult = await db.rawQuery('SELECT session_type, SUM(duration_minutes) as sum FROM timer_sessions GROUP BY session_type');
+    final Map<String, int> distribution = {};
+    for (final row in distResult) {
+      distribution[row['session_type'] as String] = (row['sum'] as int?) ?? 0;
+    }
+
+    // Get weekly timeline
+    final String lastWeek = DateTime.now().subtract(const Duration(days: 7)).toIso8601String().substring(0, 10);
+    final weeklyResult = await db.rawQuery('SELECT created_date, SUM(duration_minutes) as sum FROM timer_sessions WHERE created_date >= ? GROUP BY created_date', [lastWeek]);
+    final Map<String, int> weeklyActivity = {};
+    for (final row in weeklyResult) {
+       weeklyActivity[row['created_date'] as String] = (row['sum'] as int?) ?? 0;
+    }
 
     return AppStats(
       completedTasksTotal: completedTasksTotal,
       todayFocusMinutes: todayFocusMinutes,
       totalFocusMinutes: totalFocusMinutes,
       adhkarCompleted: adhkarCompleted,
+      focusDistribution: distribution,
+      weeklyActivity: weeklyActivity,
     );
   }
 }

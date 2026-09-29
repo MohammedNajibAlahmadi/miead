@@ -11,6 +11,7 @@ class HomeState extends Equatable {
   final String? nextPrayerTime;
   final List<TaskItem> tasks;
   final bool isFriday;
+  final String? dynamicInspiration;
   
   const HomeState({
     this.status = HomeStatus.initial,
@@ -20,6 +21,7 @@ class HomeState extends Equatable {
     this.nextPrayerTime,
     this.tasks = const [],
     this.isFriday = false,
+    this.dynamicInspiration,
   });
 
   HomeState copyWith({
@@ -30,6 +32,7 @@ class HomeState extends Equatable {
     String? nextPrayerTime,
     List<TaskItem>? tasks,
     bool? isFriday,
+    String? dynamicInspiration,
   }) {
     return HomeState(
       status: status ?? this.status,
@@ -39,9 +42,10 @@ class HomeState extends Equatable {
       nextPrayerTime: nextPrayerTime ?? this.nextPrayerTime,
       tasks: tasks ?? this.tasks,
       isFriday: isFriday ?? this.isFriday,
+      dynamicInspiration: dynamicInspiration ?? this.dynamicInspiration,
     );
   }
 
   @override
-  List<Object?> get props => [status, dateString, currentActivity, nextPrayerName, nextPrayerTime, tasks, isFriday];
+  List<Object?> get props => [status, dateString, currentActivity, nextPrayerName, nextPrayerTime, tasks, isFriday, dynamicInspiration];
 }

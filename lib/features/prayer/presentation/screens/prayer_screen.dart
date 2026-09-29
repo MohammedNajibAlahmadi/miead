@@ -20,7 +20,7 @@ class PrayerScreen extends StatelessWidget {
           actions: [
             IconButton(
               icon: const Icon(Icons.settings_outlined),
-              onPressed: () {},
+              onPressed: () => GoRouter.of(context).push('/settings'),
               tooltip: 'إعدادات الحساب',
             )
           ],

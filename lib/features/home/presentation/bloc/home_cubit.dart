@@ -5,15 +5,17 @@ import '../../../prayer/domain/services/prayer_engine.dart';
 import '../../../prayer/domain/entities/prayer_location.dart';
 import 'package:adhan/adhan.dart';
 import '../../data/repositories/task_repository.dart';
+import '../../../../core/gamification/motivation_engine.dart';
 import 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
   final AppClock _clock;
   final PrayerEngine _prayerEngine;
   final TaskRepository _taskRepository;
+  final MotivationEngine _motivationEngine;
   Timer? _ticker;
 
-  HomeCubit(this._clock, this._prayerEngine, this._taskRepository) : super(const HomeState()) {
+  HomeCubit(this._clock, this._prayerEngine, this._taskRepository, this._motivationEngine) : super(const HomeState()) {
     loadHomeData();
     _startTicker();
   }
@@ -71,12 +73,14 @@ class HomeCubit extends Cubit<HomeState> {
       final now = _clock.now();
       final dateIso = now.toIso8601String().substring(0, 10);
       final tasks = await _taskRepository.getTasks(dateIso);
+      final inspiration = _motivationEngine.getDailyInspiration();
       
       // Seed first success state
       emit(state.copyWith(
         status: HomeStatus.success,
         tasks: tasks,
         currentActivity: null,
+        dynamicInspiration: inspiration,
       ));
       
       // Calculate times natively
@@ -114,6 +118,15 @@ class HomeCubit extends Cubit<HomeState> {
     final now = _clock.now();
     final dateIso = now.toIso8601String().substring(0, 10);
     await _taskRepository.insertTask(title.trim(), dateIso);
+    
+    // Evaluate if task deserves a specialized gamification notification
+    final encouragement = _motivationEngine.getTaskEncouragement(title.trim());
+    if (encouragement != null) {
+      _motivationEngine.pushEncouragement(
+        'مهمة عظيمة!',
+        encouragement,
+      );
+    }
     
     final tasks = await _taskRepository.getTasks(dateIso);
     emit(state.copyWith(tasks: tasks));

@@ -46,8 +46,11 @@ class QiblaCubit extends Cubit<QiblaState> {
     // We are simulating the streams so UI testing works offline gracefully.
     emit(state.copyWith(isLoading: false, hasPermission: true, qiblaDirection: 135.0 /* Mecca from NY approx */));
     
-    // Simulate compass slowly moving to point around 135 over time to test UI binding.
-    // This allows the user to see the compass spinning and settling without Native crash.
-    emit(state.copyWith(heading: 100.0));
+    // Default starting point
+    emit(state.copyWith(heading: 0.0));
+  }
+
+  void updateHeading(double delta) {
+    emit(state.copyWith(heading: (state.heading + delta) % 360));
   }
 }

@@ -29,9 +29,14 @@ class MieadApp extends StatelessWidget {
             darkTheme: AppTheme.darkTheme,
             themeMode: mode,
             builder: (context, child) {
-              return Directionality(
-                textDirection: TextDirection.rtl,
-                child: child ?? const SizedBox.shrink(),
+              return Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 550), // Restrict web stretching
+                  child: Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: child ?? const SizedBox.shrink(),
+                  ),
+                ),
               );
             },
           );

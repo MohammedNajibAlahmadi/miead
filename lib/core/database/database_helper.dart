@@ -3,7 +3,7 @@ import 'package:path/path.dart';
 
 class DatabaseHelper {
   static const _databaseName = "miead.db";
-  static const _databaseVersion = 7;
+  static const _databaseVersion = 8;
 
   Database? _database;
 
@@ -71,6 +71,10 @@ class DatabaseHelper {
     if (oldVersion < 7) {
       await _createNotesTable(db);
     }
+    if (oldVersion < 8) {
+      // Mood tracking migration for existing notes
+      await db.execute('ALTER TABLE notes ADD COLUMN mood_emoji TEXT');
+    }
   }
 
   Future _createNotesTable(Database db) async {
@@ -80,7 +84,8 @@ class DatabaseHelper {
         title TEXT NOT NULL,
         content TEXT NOT NULL,
         created_at TEXT NOT NULL,
-        color_code INTEGER NOT NULL
+        color_code INTEGER NOT NULL,
+        mood_emoji TEXT
       )
     ''');
   }

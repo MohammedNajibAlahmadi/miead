@@ -14,12 +14,13 @@ class NotesCubit extends Cubit<List<Note>> {
     emit(notes);
   }
 
-  void addNote(String title, String content, int colorCode) async {
+  void addNote(String title, String content, int colorCode, String? moodEmoji) async {
     final newNote = Note(
       title: title.isEmpty ? 'تدوينة بدون عنوان' : title,
       content: content,
       createdAt: DateTime.now().toIso8601String(),
       colorCode: colorCode,
+      moodEmoji: moodEmoji,
     );
     await _repository.addNote(newNote);
     loadNotes();

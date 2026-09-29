@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../app/dependency_injection/di.dart';
+import '../../../../app/dependency_injection/di.dart';
+import '../widgets/ripple_sebha_button.dart';
 import '../bloc/adhkar_cubit.dart';
 
 class AdhkarScreen extends StatelessWidget {
@@ -31,11 +33,23 @@ class AdhkarScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 64),
-                  GestureDetector(
-                    onTap: state.isCompleted ? null : () => context.read<AdhkarCubit>().increment(),
+                  RippleSebhaButton(
+                    isCompleted: state.isCompleted,
+                    onTap: () => context.read<AdhkarCubit>().increment(),
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
+                        Container(
+                          width: 260,
+                          height: 260,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Theme.of(context).colorScheme.surface,
+                            boxShadow: [
+                               BoxShadow(color: Theme.of(context).primaryColor.withValues(alpha: 0.1), blurRadius: 20, spreadRadius: 5)
+                            ]
+                          ),
+                        ),
                         SizedBox(
                           width: 260,
                           height: 260,
@@ -52,7 +66,7 @@ class AdhkarScreen extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              '\${state.count}',
+                              '${state.count}',
                               style: Theme.of(context).textTheme.displayLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 80,
@@ -60,7 +74,7 @@ class AdhkarScreen extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              '/ \${state.currentItem?.target ?? 0}',
+                              '/ ${state.currentItem?.target ?? 0}',
                               style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey),
                             ),
                           ],

@@ -29,7 +29,17 @@ class HomeScreen extends StatelessWidget {
               return const Center(child: Text('حدث خطأ في تحميل البيانات'));
             }
 
-            return ListView(
+            return Stack(
+              children: [
+                Positioned.fill(
+                  child: Center(
+                    child: Opacity(
+                      opacity: 0.05, // Subtle watermark effect
+                      child: Image.asset('assets/images/logo.png', width: 350, height: 350, fit: BoxFit.contain),
+                    ),
+                  ),
+                ),
+                ListView(
               padding: const EdgeInsets.all(16),
               children: [
                 Text(
@@ -38,6 +48,8 @@ class HomeScreen extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                const SizedBox(height: 16),
+                _DailyInspirationBanner(inspiration: state.dynamicInspiration ?? '﴿وَقُلِ اعمَلوا فَسَيَرَى اللَّهُ عَمَلَكُم﴾'),
                 if (state.isFriday) ...[
                   const SizedBox(height: 16),
                   GestureDetector(
@@ -130,41 +142,86 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 32),
                 Text(
                   'النشاط الحالي',
-                  style: Theme.of(context).textTheme.titleLarge,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 12),
-                Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  elevation: 0,
-                  color: Theme.of(context).colorScheme.surfaceVariant,
+                const SizedBox(height: 16),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    gradient: LinearGradient(
+                      colors: [Theme.of(context).primaryColor, Theme.of(context).primaryColorDark],
+                    ),
+                    boxShadow: [
+                      BoxShadow(color: Theme.of(context).primaryColor.withValues(alpha: 0.3), blurRadius: 15, offset: const Offset(0, 5))
+                    ],
+                  ),
                   child: ListTile(
-                    title: Text(state.currentActivity ?? 'لا يوجد نشاط الآن'),
-                    subtitle: Text(state.currentActivity == null ? 'استرخِ أو ابدأ مهمة جديدة' : 'جاري التنفيذ...'),
-                    leading: const Icon(Icons.check_circle_outline),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                    title: Text(state.currentActivity ?? 'لا يوجد نشاط حالي', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                    subtitle: Text(
+                      state.currentActivity == null ? 'خذ قسطاً من الراحة أو ابدأ تحدياً جديداً..' : 'جاري التنفيذ والتسجيل بكل همة...',
+                      style: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
+                    ),
+                    leading: const Icon(Icons.bolt_rounded, color: Colors.amber, size: 36),
                   ),
                 ),
                 const SizedBox(height: 32),
-                Text('مهام اليوم', style: Theme.of(context).textTheme.titleLarge),
-                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('مهام اليوم', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                    if (state.tasks.isNotEmpty)
+                      Text('${state.tasks.where((t) => t.isCompleted).length} / ${state.tasks.length} منجزة', style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+                const SizedBox(height: 16),
                 if (state.tasks.isEmpty)
-                  const Text('لا توجد مهام لهذا اليوم، استخدم زر "+" لإضافة مهام.')
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(32),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                    ),
+                    child: Column(
+                      children: [
+                        Icon(Icons.inventory_2_outlined, size: 64, color: Colors.grey.withValues(alpha: 0.3)),
+                        const SizedBox(height: 16),
+                        const Text('أنجزت جميع مهامك ببراعة!', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                         const SizedBox(height: 8),
+                        const Text('اضغط على الزر (+) لإضافة مهام أو عادات جديدة ليومك.', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
+                      ],
+                    ),
+                  )
                 else
                   ...state.tasks.map((task) => Card(
-                    margin: const EdgeInsets.only(bottom: 8),
+                    margin: const EdgeInsets.only(bottom: 12),
                     elevation: 0,
-                    color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.4),
-                    child: CheckboxListTile(
-                       title: Text(
-                         task.title,
-                         style: TextStyle(
-                            decoration: task.isCompleted ? TextDecoration.lineThrough : null,
-                            color: task.isCompleted ? Colors.grey : null,
-                         )
-                       ),
-                       value: task.isCompleted,
-                       onChanged: (_) => context.read<HomeCubit>().toggleTask(task),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      side: BorderSide(color: task.isCompleted ? Colors.transparent : Colors.grey.withValues(alpha: 0.2)),
+                    ),
+                    color: task.isCompleted ? Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.4) : Theme.of(context).colorScheme.surface,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4.0),
+                      child: CheckboxListTile(
+                         activeColor: Theme.of(context).primaryColor,
+                         title: Text(
+                           task.title,
+                           style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: task.isCompleted ? FontWeight.normal : FontWeight.bold,
+                              decoration: task.isCompleted ? TextDecoration.lineThrough : null,
+                              color: task.isCompleted ? Colors.grey : null,
+                           )
+                         ),
+                         value: task.isCompleted,
+                         onChanged: (_) => context.read<HomeCubit>().toggleTask(task),
+                      ),
                     ),
                   )),
+                ],
+              ),
               ],
             );
           },
@@ -224,6 +281,49 @@ class HomeScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _DailyInspirationBanner extends StatelessWidget {
+  final String inspiration;
+
+  const _DailyInspirationBanner({required this.inspiration});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: 0.1)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.format_quote_rounded, size: 40, color: Theme.of(context).primaryColor.withValues(alpha: 0.5)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('إلهام اليوم', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+                const SizedBox(height: 4),
+                Text(
+                  inspiration,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onSurface,
+                    height: 1.5,
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 }

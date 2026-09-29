@@ -3,6 +3,7 @@ import '../../core/datetime/clock.dart';
 import '../../core/database/database_helper.dart';
 import '../../core/notifications/local_notifications_service.dart';
 import '../../features/timer/domain/services/timer_engine.dart';
+import '../../features/timer/data/repositories/timer_repository.dart';
 import '../../features/alarms/domain/services/alarm_engine.dart';
 import '../../features/alarms/data/repositories/alarm_repository.dart';
 import '../../features/prayer/domain/services/prayer_engine.dart';
@@ -12,6 +13,7 @@ import '../../features/prayer/presentation/bloc/qibla_cubit.dart';
 import '../../core/notifications/notification_engine.dart';
 import '../../features/statistics/data/repositories/statistics_repository.dart';
 import '../../features/statistics/presentation/bloc/statistics_cubit.dart';
+import '../../core/gamification/motivation_engine.dart';
 import '../../features/khatma/data/repositories/khatma_repository.dart';
 import '../../features/khatma/presentation/bloc/khatma_cubit.dart';
 import '../../features/notes/data/repositories/notes_repository.dart';
@@ -64,6 +66,7 @@ Future<void> setupDependencies() async {
   
   // OS Engines
   getIt.registerLazySingleton<NotificationEngine>(() => NotificationEngine());
+  getIt.registerLazySingleton<MotivationEngine>(() => MotivationEngine(getIt<LocalNotificationsService>()));
   
   // Khatma Engine
   getIt.registerLazySingleton<KhatmaRepository>(() => KhatmaRepository(getIt<DatabaseHelper>()));
@@ -73,7 +76,8 @@ Future<void> setupDependencies() async {
   getIt.registerLazySingleton<NotesRepository>(() => NotesRepository(getIt<DatabaseHelper>()));
   getIt.registerFactory<NotesCubit>(() => NotesCubit(getIt<NotesRepository>()));
   
-  getIt.registerFactory<HomeCubit>(() => HomeCubit(getIt<AppClock>(), getIt<PrayerEngine>(), getIt<TaskRepository>()));
-  getIt.registerFactory<FocusCubit>(() => FocusCubit(getIt<TimerEngine>()));
+  getIt.registerFactory<HomeCubit>(() => HomeCubit(getIt<AppClock>(), getIt<PrayerEngine>(), getIt<TaskRepository>(), getIt<MotivationEngine>()));
+  getIt.registerLazySingleton<TimerRepository>(() => TimerRepository(getIt<DatabaseHelper>()));
+  getIt.registerFactory<FocusCubit>(() => FocusCubit(getIt<TimerEngine>(), getIt<TimerRepository>()));
   getIt.registerFactory<AlarmsCubit>(() => AlarmsCubit(getIt<AlarmRepository>()));
 }

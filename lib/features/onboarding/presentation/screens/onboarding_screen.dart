@@ -19,30 +19,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          PageView(
-            controller: _pageController,
-            onPageChanged: (index) => setState(() => _currentIndex = index),
-            children: [
-              _buildPage(
-                context,
-                icon: Icons.mosque,
-                title: 'مرحباً بك في مِيعاد',
-                description: 'رفيقك اليومي لإدارة الوقت، العبادات، والمهام الشخصية بكل سهولة.',
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Theme.of(context).colorScheme.surface,
+                  Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                ],
               ),
-              _buildPage(
-                context,
-                icon: Icons.wifi_off,
-                title: 'آمن ومحلي بصورة تامة',
-                description: 'بياناتك محفوظة في جهازك فقط. التطبيق لا يحتاج وتيرة الإنترنت ليعمل أبداً (Offline First).',
-              ),
-              _buildPage(
-                context,
-                icon: Icons.timer,
-                title: 'تحكم في يومك',
-                description: 'استخدم جلسات التركيز، ونظّم مهامك، وحافظ على وردك اليومي للوصول للإنتاجية العالية.',
-                isLast: true,
-              ),
-            ],
+            ),
+            child: PageView(
+              controller: _pageController,
+              onPageChanged: (index) => setState(() => _currentIndex = index),
+              children: [
+                _buildIntroPage(context),
+                _buildPrayerPage(context),
+                _buildAncestorsPage(context),
+              ],
+            ),
           ),
           Positioned(
             bottom: 40,
@@ -71,15 +67,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       context.read<SettingsCubit>().completeFirstRun();
                       context.go('/');
                     } else {
-                      _pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+                      _pageController.nextPage(duration: const Duration(milliseconds: 400), curve: Curves.easeInOutCubic);
                     }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF006A4E),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    elevation: _currentIndex == 2 ? 8 : 2,
                   ),
-                  child: Text(_currentIndex == 2 ? 'ابدأ الآن' : 'التالي'),
+                  child: Text(
+                    _currentIndex == 2 ? 'بسم الله نبدأ' : 'التالي',
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
                 ),
               ],
             ),
@@ -89,23 +89,92 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  Widget _buildPage(BuildContext context, {required IconData icon, required String title, required String description, bool isLast = false}) {
+  Widget _buildIntroPage(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(32.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 100, color: const Color(0xFF006A4E)),
+          Image.asset('assets/images/logo.png', width: 140, height: 140),
           const SizedBox(height: 32),
-          Text(title, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: const Color(0xFF006A4E))),
-          const SizedBox(height: 16),
           Text(
-            description,
+            'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF006A4E),
+              fontFamily: 'Amiri', // assuming this elegant font exists standardly or falls back
+            ),
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 16, height: 1.5),
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            'أهلاً ومرحباً بك في تطبيق (مِيعاد)، رفيقك الرقمي ومساعدك الشخصي في تنظيم يومك، وترتيب وقتك، والحفاظ على عباداتك ومهامك.\n\n﴿وَقُلِ اعمَلوا فَسَيَرَى اللَّهُ عَمَلَكُم﴾',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 18, height: 1.8, color: Colors.black87),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPrayerPage(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(32.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.auto_awesome, size: 80, color: Color(0xFFD4AF37)),
+          const SizedBox(height: 32),
+          Text(
+            'طلب قبل البدء',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF006A4E),
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            'هذا التطبيق صُنع حباً ورغبةً في نشر الخير والأثر الطيب. نسألك بظهر الغيب دعوة صادقة لمن أسس وطور هذا التطبيق.\n\nادعُ له بالتوفيق، والسداد، والنجاح الدائم في دينه ودنياه، وأن يبارك الله في خطاه ويفتح له أبواب فضله ورزقه.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 18, height: 1.8, color: Colors.black87),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAncestorsPage(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(32.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.favorite_rounded, size: 80, color: Color(0xFFD4AF37)),
+          const SizedBox(height: 32),
+          Text(
+            'لمسة وفاء ومغفرة',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF006A4E),
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            'وفي هذا المقام، نرجو منك إهداء دعوة صالحة بالرحمة الواسعة والمغفرة التامة لأجداد مطور هذا التطبيق، ولمن أسسه ورباه.\n\nاللهم اجعل قبور أجدادنا روضة من رياض الجنة، واجمعنا بهم مع النبيين والصديقين والشهداء والصالحين.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 18, height: 1.8, color: Colors.black87),
+          ),
+          const SizedBox(height: 32),
+          const Text(
+            '«وَالَّذِينَ جَاءُوا مِن بَعْدِهِمْ يَقُولُونَ رَبَّنَا اغْفِرْ لَنَا وَلِإِخْوَانِنَا الَّذِينَ سَبَقُونَا بِالْإِيمَانِ»',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 16, height: 1.8, color: Colors.grey, fontStyle: FontStyle.italic),
           ),
         ],
       ),
     );
   }
 }
+

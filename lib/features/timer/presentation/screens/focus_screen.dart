@@ -78,20 +78,67 @@ class FocusScreen extends StatelessWidget {
                       spacing: 8,
                       runSpacing: 8,
                       children: [
-                        _buildChip(SessionType.study, 'مذاكرة', session.type, context),
-                        _buildChip(SessionType.quran, 'قرآن', session.type, context),
-                        _buildChip(SessionType.reading, 'قراءة', session.type, context),
-                        _buildChip(SessionType.work, 'عمل', session.type, context),
-                        _buildChip(SessionType.custom, 'مخصص', session.type, context),
+                        _buildChip(SessionType.study, 'مذاكرة', session, context),
+                        _buildChip(SessionType.quran, 'قرآن', session, context),
+                        _buildChip(SessionType.reading, 'قراءة', session, context),
+                        _buildChip(SessionType.work, 'عمل', session, context),
+                        ...state.customTags.map((tag) => _buildCustomChip(tag, session, context)),
+                        _buildAddCustomChip(context),
                       ],
                     ),
                     const SizedBox(height: 24),
-                    Text('المدة: ${session.duration.inMinutes} دقيقة', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          onPressed: session.duration.inMinutes > 1 
+                              ? () => context.read<FocusCubit>().updateDuration(session.duration.inMinutes - 1) 
+                              : null,
+                          icon: const Icon(Icons.remove_circle, size: 32),
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        InkWell(
+                          onTap: () async {
+                            final initialTime = TimeOfDay(
+                              hour: session.duration.inMinutes ~/ 60,
+                              minute: session.duration.inMinutes % 60,
+                            );
+                            final selectedTime = await showTimePicker(
+                              context: context,
+                              initialTime: initialTime,
+                              helpText: 'اختر مدة الجلسة (ساعات : دقائق)',
+                            );
+                            if (selectedTime != null && context.mounted) {
+                              final total = (selectedTime.hour * 60) + selectedTime.minute;
+                              if (total > 0) context.read<FocusCubit>().updateDuration(total);
+                            }
+                          },
+                          borderRadius: BorderRadius.circular(16),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                            child: Row(
+                              children: [
+                                Icon(Icons.access_time_filled, color: Theme.of(context).primaryColor),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'المدة: ${session.duration.inMinutes} دقيقة', 
+                                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () => context.read<FocusCubit>().updateDuration(session.duration.inMinutes + 1),
+                          icon: const Icon(Icons.add_circle, size: 32),
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ],
+                    ),
                     Slider(
-                      value: session.duration.inMinutes.toDouble(),
-                      min: 5,
-                      max: 120,
-                      divisions: 23,
+                      value: session.duration.inMinutes.toDouble().clamp(1.0, 300.0),
+                      min: 1,
+                      max: 300,
                       activeColor: Theme.of(context).primaryColor,
                       onChanged: (val) => context.read<FocusCubit>().updateDuration(val.toInt()),
                     ),
@@ -156,8 +203,8 @@ class FocusScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildChip(SessionType type, String label, SessionType selectedType, BuildContext context) {
-    final isSelected = type == selectedType;
+  Widget _buildChip(SessionType type, String label, TimerSession session, BuildContext context) {
+    final isSelected = type == session.type && session.type != SessionType.custom;
     return FilterChip(
       label: Text(label, style: const TextStyle(fontSize: 16)),
       selected: isSelected,
@@ -168,6 +215,51 @@ class FocusScreen extends StatelessWidget {
       selectedColor: Theme.of(context).primaryColor.withValues(alpha: 0.15),
       checkmarkColor: Theme.of(context).primaryColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    );
+  }
+
+  Widget _buildCustomChip(String label, TimerSession session, BuildContext context) {
+    final isSelected = session.type == SessionType.custom && session.customLabel == label;
+    return FilterChip(
+      label: Text(label, style: const TextStyle(fontSize: 16)),
+      selected: isSelected,
+      onSelected: (bool selected) {
+        if (selected) context.read<FocusCubit>().setCustomLabel(label);
+      },
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      selectedColor: Theme.of(context).primaryColor.withValues(alpha: 0.15),
+      checkmarkColor: Theme.of(context).primaryColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    );
+  }
+
+  Widget _buildAddCustomChip(BuildContext context) {
+    return ActionChip(
+      label: const Text('مخصص +', style: TextStyle(fontSize: 16)),
+      onPressed: () async {
+        final TextEditingController controller = TextEditingController();
+        final String? result = await showDialog<String>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('نوع جلسة جديدة'),
+            content: TextField(
+              controller: controller,
+              autofocus: true,
+              decoration: const InputDecoration(hintText: ''),
+            ),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء')),
+              ElevatedButton(onPressed: () => Navigator.pop(ctx, controller.text), child: const Text('إضافة')),
+            ],
+          ),
+        );
+        if (result != null && result.trim().isNotEmpty && context.mounted) {
+          context.read<FocusCubit>().setCustomLabel(result.trim());
+        }
+      },
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: Theme.of(context).primaryColor.withValues(alpha: 0.3), style: BorderStyle.solid)),
     );
   }
 }

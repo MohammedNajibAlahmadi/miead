@@ -2,25 +2,47 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../app/dependency_injection/di.dart';
 import '../../../../core/notifications/notification_engine.dart';
+import '../../data/repositories/timer_repository.dart';
 import '../../domain/entities/timer_session.dart';
 import '../../domain/services/timer_engine.dart';
 import 'focus_state.dart';
 
 class FocusCubit extends Cubit<FocusState> {
   final TimerEngine _engine;
+  final TimerRepository _repository;
   Timer? _ticker;
 
-  FocusCubit(this._engine)
+  FocusCubit(this._engine, this._repository)
       : super(const FocusState(
           session: TimerSession(
             id: 'idle',
             type: SessionType.custom,
             duration: Duration(minutes: 25),
           ),
-        ));
+        )) {
+    _loadTags();
+  }
+
+  Future<void> _loadTags() async {
+    final tags = await _repository.getDistinctTags();
+    emit(state.copyWith(customTags: tags));
+  }
 
   void selectType(SessionType type) {
     emit(state.copyWith(session: state.session.copyWith(type: type)));
+  }
+
+  void setCustomLabel(String label) {
+    if (!state.customTags.contains(label) && !['مذاكرة', 'قرآن', 'قراءة', 'عمل'].contains(label)) {
+      final newTags = List<String>.from(state.customTags)..add(label);
+      emit(state.copyWith(customTags: newTags));
+    }
+    emit(state.copyWith(
+      session: state.session.copyWith(
+        type: SessionType.custom, 
+        customLabel: label,
+      )
+    ));
   }
 
   void updateDuration(int minutes) {
@@ -29,12 +51,12 @@ class FocusCubit extends Cubit<FocusState> {
 
   void start() {
     final nextSession = _engine.transition(state.session, TimerState.running);
-    emit(state.copyWith(session: nextSession.copyWith(startTime: DateTime.now())));
+    emit(state.copyWith(session: nextSession.copyWith(startTime: DateTime.now(), elapsed: Duration.zero)));
     
     _ticker?.cancel();
     _ticker = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (state.session.state == TimerState.running) {
-        final newElapsed = state.session.elapsed + const Duration(seconds: 1);
+        final newElapsed = DateTime.now().difference(state.session.startTime!);
         if (newElapsed >= state.session.duration) {
           timer.cancel();
           _complete();
@@ -52,11 +74,14 @@ class FocusCubit extends Cubit<FocusState> {
   }
 
   void resume() {
-    emit(state.copyWith(session: _engine.transition(state.session, TimerState.running)));
+    final adjustedStartTime = DateTime.now().subtract(state.session.elapsed);
+    final nextSession = _engine.transition(state.session, TimerState.running).copyWith(startTime: adjustedStartTime);
+    emit(state.copyWith(session: nextSession));
+    
     _ticker?.cancel();
     _ticker = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (state.session.state == TimerState.running) {
-        final newElapsed = state.session.elapsed + const Duration(seconds: 1);
+        final newElapsed = DateTime.now().difference(state.session.startTime!);
         if (newElapsed >= state.session.duration) {
           timer.cancel();
           _complete();
@@ -74,6 +99,8 @@ class FocusCubit extends Cubit<FocusState> {
   }
 
   void _complete() {
+    _repository.saveSession(state.session);
+
     final nextSession = _engine.transition(state.session, TimerState.completed);
     emit(state.copyWith(session: nextSession));
     

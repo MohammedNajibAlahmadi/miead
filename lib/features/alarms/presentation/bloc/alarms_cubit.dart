@@ -65,4 +65,45 @@ class AlarmsCubit extends Cubit<AlarmsState> {
     // Save to DB
     await _repository.updateAlarm(updatedAlarm);
   }
+
+  Future<void> updateAlarmTime(String id, LocalTime newTime) async {
+    final alarmIndex = state.alarms.indexWhere((a) => a.id == id);
+    if (alarmIndex == -1) return;
+    
+    final alarm = state.alarms[alarmIndex];
+    final updatedAlarm = AlarmDefinition(
+      id: alarm.id,
+      title: alarm.title,
+      time: newTime,
+      isActive: alarm.isActive,
+      activeDays: alarm.activeDays,
+      soundPath: alarm.soundPath,
+      vibration: alarm.vibration,
+    );
+    
+    final updatedList = List<AlarmDefinition>.from(state.alarms);
+    updatedList[alarmIndex] = updatedAlarm;
+    emit(state.copyWith(alarms: updatedList));
+    
+    if (updatedAlarm.isActive) {
+      await getIt<NotificationEngine>().scheduleAlarmNotification(updatedAlarm);
+    }
+    await _repository.updateAlarm(updatedAlarm);
+  }
+
+  Future<void> updateFullAlarm(AlarmDefinition updatedAlarm) async {
+    final alarmIndex = state.alarms.indexWhere((a) => a.id == updatedAlarm.id);
+    if (alarmIndex == -1) return;
+    
+    final updatedList = List<AlarmDefinition>.from(state.alarms);
+    updatedList[alarmIndex] = updatedAlarm;
+    emit(state.copyWith(alarms: updatedList));
+    
+    if (updatedAlarm.isActive) {
+      await getIt<NotificationEngine>().scheduleAlarmNotification(updatedAlarm);
+    } else {
+      await getIt<NotificationEngine>().cancelAlarm(updatedAlarm.id);
+    }
+    await _repository.updateAlarm(updatedAlarm);
+  }
 }

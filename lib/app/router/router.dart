@@ -31,11 +31,6 @@ final goRouter = GoRouter(
       return '/onboarding';
     }
     
-    // If it's not the first run but they are trapped in onboarding, send them home.
-    if (!isFirstRun && goingToOnboarding) {
-      return '/';
-    }
-    
     return null; // no redirect
   },
   routes: [

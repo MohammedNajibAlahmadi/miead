@@ -49,8 +49,12 @@ class QiblaCompassScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 64),
                 // Compass Container
-                Center(
-                  child: Stack(
+                GestureDetector(
+                  onPanUpdate: (details) {
+                    context.read<QiblaCubit>().updateHeading(details.delta.dx * 0.7);
+                  },
+                  child: Center(
+                    child: Stack(
                     alignment: Alignment.center,
                     children: [
                       // Compass Dial (Background rotating to North)
@@ -130,11 +134,12 @@ class QiblaCompassScreen extends StatelessWidget {
                     ],
                   ),
                 ),
+                ), // Close GestureDetector
                 const Spacer(),
                 const Padding(
                   padding: EdgeInsets.all(32.0),
                   child: Text(
-                    'قم بتدوير الهاتف بعيداً عن الأجهزة الكهربائية والمغناطيسية للحصول على دقة أعلى.',
+                    'قم بتدوير الهاتف لمعرفة الاتجاه بدقة.\n\n(في حال استخدام الكمبيوتر أو الويب: يمكنك سحب البوصلة يميناً ويساراً بإصبعك/الماوس لتدويرها يدوياً)',
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.grey),
                   ),

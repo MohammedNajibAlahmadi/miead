@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/statistics_cubit.dart';
 import '../../domain/entities/app_stats.dart';
 import '../widgets/achievements_view.dart';
+import '../widgets/fractal_tree.dart';
+import '../widgets/focus_distribution_chart.dart';
+import '../widgets/weekly_heatmap_card.dart';
 
 class StatisticsScreen extends StatelessWidget {
   const StatisticsScreen({super.key});
@@ -29,6 +32,12 @@ class StatisticsScreen extends StatelessWidget {
                 ListView(
                   padding: const EdgeInsets.all(16.0),
                   children: [
+                    WeeklyHeatmapCard(weeklyActivity: stats.weeklyActivity),
+                    const SizedBox(height: 16),
+                    FractalTree(focusMinutes: stats.totalFocusMinutes),
+                    const SizedBox(height: 16),
+                    FocusDistributionChart(distribution: stats.focusDistribution),
+                    const SizedBox(height: 24),
                     _buildStatCard(
                       context,
                       title: 'المهام المنجزة',

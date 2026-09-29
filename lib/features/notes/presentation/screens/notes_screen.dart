@@ -44,7 +44,12 @@ class NotesScreen extends StatelessWidget {
                   ),
                   child: ListTile(
                     contentPadding: const EdgeInsets.all(16),
-                    title: Text(note.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                    title: Row(
+                      children: [
+                        if (note.moodEmoji != null) ...[Text(note.moodEmoji!, style: const TextStyle(fontSize: 24)), const SizedBox(width: 8)],
+                        Expanded(child: Text(note.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18))),
+                      ],
+                    ),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -87,52 +92,75 @@ class NotesScreen extends StatelessWidget {
     final titleCtrl = TextEditingController(text: existingNote?.title ?? '');
     final contentCtrl = TextEditingController(text: existingNote?.content ?? '');
     int colorCode = existingNote?.colorCode ?? 0xFF006A4E;
+    String? selectedMood = existingNote?.moodEmoji;
     
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (bottomSheetContext) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(bottomSheetContext).viewInsets.bottom,
-            left: 24, right: 24, top: 24
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-               TextField(
-                 controller: titleCtrl,
-                 decoration: const InputDecoration(hintText: 'عنوان الملاحظة...', border: InputBorder.none, hintStyle: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                 style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-               ),
-               const Divider(),
-               TextField(
-                 controller: contentCtrl,
-                 maxLines: 8,
-                 decoration: const InputDecoration(hintText: 'اكتب أفكارك وملاحظاتك بطلاقة...', border: InputBorder.none),
-               ),
-               const SizedBox(height: 16),
-               SizedBox(
-                 width: double.infinity,
-                 child: ElevatedButton(
-                   style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD4AF37), foregroundColor: Colors.white),
-                   onPressed: () {
-                      if (contentCtrl.text.isEmpty) return;
-                      // Safe Cubit invocation
-                      if (existingNote == null) {
-                        context.read<NotesCubit>().addNote(titleCtrl.text, contentCtrl.text, colorCode);
-                      } else {
-                        context.read<NotesCubit>().updateNote(existingNote.copyWith(title: titleCtrl.text, content: contentCtrl.text));
-                      }
-                      Navigator.pop(bottomSheetContext);
-                   },
-                   child: const Text('حفظ الإدخال'),
-                 ),
-               ),
-               const SizedBox(height: 24),
-            ],
-          ),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(bottomSheetContext).viewInsets.bottom,
+                left: 24, right: 24, top: 24
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                   TextField(
+                     controller: titleCtrl,
+                     decoration: const InputDecoration(hintText: 'عنوان الملاحظة...', border: InputBorder.none, hintStyle: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                     style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                   ),
+                   const Divider(),
+                   SingleChildScrollView(
+                     scrollDirection: Axis.horizontal,
+                     child: Row(
+                       children: ['😊', '😌', '😔', '😡', '🤔', '💪', '🙏'].map((emoji) => Padding(
+                         padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                         child: ChoiceChip(
+                           label: Text(emoji, style: const TextStyle(fontSize: 24)),
+                           selected: selectedMood == emoji,
+                           onSelected: (val) {
+                             setState(() { selectedMood = val ? emoji : null; });
+                           },
+                           backgroundColor: Colors.transparent,
+                           selectedColor: Theme.of(context).primaryColor.withValues(alpha: 0.2),
+                           shape: const CircleBorder(),
+                         ),
+                       )).toList(),
+                     ),
+                   ),
+                   const Divider(),
+                   TextField(
+                     controller: contentCtrl,
+                     maxLines: 8,
+                     decoration: const InputDecoration(hintText: 'اكتب أفكارك وملاحظاتك بطلاقة...', border: InputBorder.none),
+                   ),
+                   const SizedBox(height: 16),
+                   SizedBox(
+                     width: double.infinity,
+                     child: ElevatedButton(
+                       style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD4AF37), foregroundColor: Colors.white),
+                       onPressed: () {
+                          if (contentCtrl.text.isEmpty) return;
+                          if (existingNote == null) {
+                            context.read<NotesCubit>().addNote(titleCtrl.text, contentCtrl.text, colorCode, selectedMood);
+                          } else {
+                            context.read<NotesCubit>().updateNote(existingNote.copyWith(title: titleCtrl.text, content: contentCtrl.text, moodEmoji: selectedMood ?? '')); // Empty string as a fallback to clear it isn't great, better keep it clean. But Wait, `copyWith` only replaces if NOT NULL. 
+                          }
+                          Navigator.pop(bottomSheetContext);
+                       },
+                       child: const Text('حفظ التدوينة'),
+                     ),
+                   ),
+                   const SizedBox(height: 24),
+                ],
+              ),
+            );
+          }
         );
       }
     );

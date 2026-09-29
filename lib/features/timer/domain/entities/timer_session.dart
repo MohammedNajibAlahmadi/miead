@@ -6,6 +6,7 @@ enum SessionType { study, quran, reading, work, custom }
 class TimerSession extends Equatable {
   final String id;
   final SessionType type;
+  final String? customLabel;
   final Duration duration;
   final Duration elapsed;
   final TimerState state;
@@ -14,6 +15,7 @@ class TimerSession extends Equatable {
   const TimerSession({
     required this.id,
     required this.type,
+    this.customLabel,
     required this.duration,
     this.elapsed = Duration.zero,
     this.state = TimerState.idle,
@@ -22,6 +24,7 @@ class TimerSession extends Equatable {
 
   TimerSession copyWith({
     SessionType? type,
+    String? customLabel,
     Duration? duration,
     Duration? elapsed,
     TimerState? state,
@@ -30,6 +33,7 @@ class TimerSession extends Equatable {
     return TimerSession(
       id: id,
       type: type ?? this.type,
+      customLabel: customLabel ?? this.customLabel,
       duration: duration ?? this.duration,
       elapsed: elapsed ?? this.elapsed,
       state: state ?? this.state,
@@ -38,5 +42,5 @@ class TimerSession extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, type, duration, elapsed, state, startTime];
+  List<Object?> get props => [id, type, customLabel, duration, elapsed, state, startTime];
 }

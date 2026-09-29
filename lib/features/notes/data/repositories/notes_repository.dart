@@ -16,6 +16,7 @@ class NotesRepository {
       content: row['content'] as String,
       createdAt: row['created_at'] as String,
       colorCode: row['color_code'] as int,
+      moodEmoji: row['mood_emoji'] as String?,
     )).toList();
   }
 
@@ -26,6 +27,7 @@ class NotesRepository {
       'content': note.content,
       'created_at': note.createdAt,
       'color_code': note.colorCode,
+      'mood_emoji': note.moodEmoji,
     });
   }
 
@@ -37,6 +39,7 @@ class NotesRepository {
       'content': note.content,
       'created_at': note.createdAt,
       'color_code': note.colorCode,
+      'mood_emoji': note.moodEmoji,
     }, where: 'id = ?', whereArgs: [note.id]);
   }
 
