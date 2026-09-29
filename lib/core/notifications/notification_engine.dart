@@ -14,7 +14,7 @@ class NotificationEngine {
     const InitializationSettings initSettings = InitializationSettings(android: initSettingsAndroid);
     
     await _plugin.initialize(
-      initSettings,
+      settings: initSettings,
       onDidReceiveNotificationResponse: (details) {
         // Handle notification tap
       },
@@ -38,10 +38,10 @@ class NotificationEngine {
     );
     const details = NotificationDetails(android: androidDetails);
     await _plugin.show(
-      id,
-      title,
-      body,
-      details,
+      id: id,
+      title: title,
+      body: body,
+      notificationDetails: details,
     );
   }
 
@@ -69,19 +69,18 @@ class NotificationEngine {
     final details = const NotificationDetails(android: androidDetails);
 
     await _plugin.zonedSchedule(
-      alarm.id.hashCode,
-      alarm.title,
-      'حان وقت: ${alarm.title}',
-      tz.TZDateTime.from(scheduledDate, tz.local),
-      details,
+      id: alarm.id.hashCode,
+      title: alarm.title,
+      body: 'حان وقت: ${alarm.title}',
+      scheduledDate: tz.TZDateTime.from(scheduledDate, tz.local),
+      notificationDetails: details,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
     );
   }
 
   Future<void> cancelAlarm(String id) async {
     if (kIsWeb) return;
-    await _plugin.cancel(id.hashCode);
+    await _plugin.cancel(id: id.hashCode);
   }
 
   Future<void> cancelAll() async {
