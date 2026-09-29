@@ -10,7 +10,7 @@ class NotificationEngine {
   Future<void> initialize() async {
     if (_isInitialized || kIsWeb) return;
 
-    const AndroidInitializationSettings initSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const AndroidInitializationSettings initSettingsAndroid = AndroidInitializationSettings('@mipmap/launcher_icon');
     const InitializationSettings initSettings = InitializationSettings(android: initSettingsAndroid);
     
     await _plugin.initialize(
