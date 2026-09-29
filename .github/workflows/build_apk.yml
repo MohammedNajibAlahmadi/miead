@@ -1,4 +1,4 @@
-name: Build Android APK for Galaxy S5 (API 21+)
+name: Build Android Release APK (All Modern Phones)
 
 on:
   push:
